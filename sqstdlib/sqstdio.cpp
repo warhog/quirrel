@@ -65,34 +65,31 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
             fileDir.remove_filename();
         }
 
-        std::cout << "absolute path: " << fileDir.string() << std::endl;
-
         // abort if fileDir is not a directory
         if (!std::filesystem::is_directory(fileDir)) {
-            std::cout << "not a dir" << std::endl;
+            std::cout << "  not a dir" << std::endl;
             return 0;
         }
         
         // canonicalize fileDir to resolve . and .. in the path
         fileDir = std::filesystem::canonical(fileDir);
-        std::cout << "canonical path: " << fileDir.string() << std::endl;
         
         // if base path len is greater than the path len then the file is outside of base path
         auto basePathLen = std::distance(basePath.begin(), basePath.end());
         auto pathLen = std::distance(fileDir.begin(), fileDir.end());
         if (basePathLen > pathLen) {
-            std::cout << "length differs" << std::endl;        
+            std::cout << "  length differs" << std::endl;        
             return 0;
         }
 
         // test if fileDir starts with basePath    
         if (!std::equal(basePath.begin(), basePath.end(), fileDir.begin())) {
             // fileDir not starting with basePath
-            std::cout << "not starting with" << std::endl;        
+            std::cout << "  not starting with" << std::endl;        
             return 0;
         }
-        
         fileDir.append(filePath.filename().string());
+        std::cout << "  loading: " << fileDir.string() << std::endl;
 #ifndef SQUNICODE
         return (SQFILE)fopen(fileDir.c_str(),mode);
 #else
