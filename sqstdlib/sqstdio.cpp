@@ -12,7 +12,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
     std::cout << "basepath: " << basePath.string() << std::endl;
 
-    std::filesystem::path p = std::filesystem::canonical("./string suchen und ersetzen");
+    std::filesystem::path p = std::filesystem::canonical(sfilename);
 
     if (p.has_filename()) {    
         p.remove_filename();
