@@ -9,6 +9,7 @@
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
+    printf("fiel to open: %s\n", filename);
 #ifndef SQUNICODE
     return (SQFILE)fopen(filename,mode);
 #else
@@ -354,8 +355,6 @@ SQInteger file_write(SQUserPointer file,SQUserPointer p,SQInteger size)
 
 SQRESULT sqstd_loadfile(HSQUIRRELVM v,const SQChar *filename,SQBool printerror)
 {
-    return sq_throwerror(v, _SC("22cannot open the file"));
-
     SQFILE file = sqstd_fopen(filename,_SC("rb"));
 
     SQInteger ret;
