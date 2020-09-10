@@ -12,6 +12,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
     std::cout << "basepath: " << basePath.string() << std::endl;
 
+    std::cout << "checking: " << sfilename << std::endl;
     if (std::filesystem::exists(sfilename)) {
         std::cout << "not existing: " << sfilename << std::endl;
         return false;
