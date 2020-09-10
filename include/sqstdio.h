@@ -27,6 +27,7 @@ extern "C" {
 
 typedef void* SQFILE;
 
+#include <string>
 std::string sqstd_io_file_operation_base_path;
 
 SQUIRREL_API SQBool sqstd_io_set_base_path(const SQChar *);
