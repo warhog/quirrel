@@ -27,6 +27,7 @@ extern "C" {
 
 typedef void* SQFILE;
 
+SQUIRREL_API sqstd_io_is_valid_path(const SQChar *);
 SQUIRREL_API SQFILE sqstd_fopen(const SQChar *,const SQChar *);
 SQUIRREL_API SQInteger sqstd_fread(SQUserPointer, SQInteger, SQInteger, SQFILE);
 SQUIRREL_API SQInteger sqstd_fwrite(const SQUserPointer, SQInteger, SQInteger, SQFILE);
