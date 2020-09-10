@@ -354,6 +354,8 @@ SQInteger file_write(SQUserPointer file,SQUserPointer p,SQInteger size)
 
 SQRESULT sqstd_loadfile(HSQUIRRELVM v,const SQChar *filename,SQBool printerror)
 {
+    return sq_throwerror(v, _SC("22cannot open the file"));
+
     SQFILE file = sqstd_fopen(filename,_SC("rb"));
 
     SQInteger ret;
