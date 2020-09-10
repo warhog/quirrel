@@ -15,10 +15,10 @@ SQBool sqstd_io_set_base_path(SQChar *filename) {
 }
 
 SQBool sqstd_io_is_valid_path(const SQChar *filename) {
+    sqstd_io_set_base_path(NULL);
     if (sqstd_io_file_operation_base_path == NULL) {
         return SQFalse;
     }
-    
     std::string sfilename(filename);
     if (sfilename.empty()) {
         return SQFalse;
