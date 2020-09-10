@@ -43,16 +43,13 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
-
-    size_t len = strlen(filename);
-    SQChar newFilename[len + 1] = {0};
-    strcpy(newFilename, filename);
-    
     if (sqstd_io_base_path_set()) {
         std::string stringFilename(filename);
         
         std::filesystem::path filePath(stringFilename);
         std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
+        
+        std::cout << "filePath entry: " << filePath.string() << std::endl;
         
         // test if given file (and path) is relative
         if (filePath.is_relative()) {
@@ -61,39 +58,48 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
             filePath = basePath / std::filesystem::path(stringFilename);
         }
         std::cout << filePath.string() << std::endl;
-        
-        // remove the filename from filePath if it is existing
-        if (filePath.has_filename()) {
-            filePath.remove_filename();
+
+        std::filesystem::path fileDir(filePath);
+        // remove the filename from fileDir if it is existing
+        if (fileDir.has_filename()) {
+            fileDir.remove_filename();
         }
 
-        std::cout << "absolute path: " << filePath.string() << std::endl;
+        std::cout << "absolute path: " << fileDir.string() << std::endl;
 
-        // canonicalize filePath to resolve . and .. in the path
-        filePath = std::filesystem::canonical(filePath);
-        std::cout << "canonical path: " << filePath.string() << std::endl;
+        // canonicalize fileDir to resolve . and .. in the path
+        fileDir = std::filesystem::canonical(fileDir);
+        std::cout << "canonical path: " << fileDir.string() << std::endl;
         
         // if base path len is greater than the path len then the file is outside of base path
         auto basePathLen = std::distance(basePath.begin(), basePath.end());
-        auto pathLen = std::distance(filePath.begin(), filePath.end());
+        auto pathLen = std::distance(fileDir.begin(), fileDir.end());
         if (basePathLen > pathLen) {
             std::cout << "length differs" << std::endl;        
             return 0;
         }
 
-        // test if filePath starts with basePath    
-        if (!std::equal(basePath.begin(), basePath.end(), filePath.begin())) {
-            // filePath not starting with basePath
+        // test if fileDir starts with basePath    
+        if (!std::equal(basePath.begin(), basePath.end(), fileDir.begin())) {
+            // fileDir not starting with basePath
             std::cout << "not starting with" << std::endl;        
             return 0;
         }
+        
+        fileDir.append(filePath.filename().string());
+#ifndef SQUNICODE
+        return (SQFILE)fopen(fileDir.c_str(),mode);
+#else
+        return (SQFILE)_wfopen(fileDir.c_str(),mode);
+#endif
+        
     }
 
 
 #ifndef SQUNICODE
-    return (SQFILE)fopen(newFilename,mode);
+    return (SQFILE)fopen(filename,mode);
 #else
-    return (SQFILE)_wfopen(newFilename,mode);
+    return (SQFILE)_wfopen(filename,mode);
 #endif
 }
 
