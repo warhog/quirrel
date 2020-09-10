@@ -68,8 +68,10 @@ SQBool sqstd_io_is_valid_path(const SQChar *filename) {
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
-    printf("fiel to open: %s\n", filename);
-    sqstd_io_is_valid_path(filename);
+    if (!sqstd_io_is_valid_path(filename))
+    {
+        return (SQFILE)-1;
+    }    
 #ifndef SQUNICODE
     return (SQFILE)fopen(filename,mode);
 #else
