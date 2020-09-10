@@ -27,6 +27,9 @@ extern "C" {
 
 typedef void* SQFILE;
 
+std::string sqstd_io_file_operation_base_path;
+
+SQUIRREL_API SQBool sqstd_io_set_base_path(const SQChar *);
 SQUIRREL_API SQBool sqstd_io_is_valid_path(const SQChar *);
 SQUIRREL_API SQFILE sqstd_fopen(const SQChar *,const SQChar *);
 SQUIRREL_API SQInteger sqstd_fread(SQUserPointer, SQInteger, SQInteger, SQFILE);
