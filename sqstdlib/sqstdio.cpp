@@ -52,38 +52,38 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         std::string stringFilename(filename);
         
         std::filesystem::path filePath(stringFilename);
-        // remove the filename from filePath if it is existing
-        if (filePath.has_filename()) {    
-            filePath.remove_filename();
-        }
-        
         std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
         
-        // test if given file is absolute or relative
+        // test if given file (and path) is relative
         if (filePath.is_relative()) {
             // is a relative path -> prepend the base path
-            std::cout << "relative path" << std::endl;        
-            basePath += std::filesystem::canonical(std::filesystem::path(stringFilename));
-            
-        } else {
-            // is an absolute path -> test if starts with base path
-            std::cout << "absolute path" << std::endl;        
+            std::cout << "relative path" << std::endl;
+            filePath = basePath / std::filesystem::path(stringFilename);
+        }
+        std::cout << filePath.string() << std::endl;
+        
+        // remove the filename from filePath if it is existing
+        if (filePath.has_filename()) {
+            filePath.remove_filename();
+        }
 
-            // make filePath canonical to resolve . and .. in the path
-            filePath = std::filesystem::canonical(filePath);
+        std::cout << "absolute path: " << filePath.string() << std::endl;
 
-            // if base path len is greater than the path len then the file is outside of base path
-            auto basePathLen = std::distance(basePath.begin(), basePath.end());
-            auto pathLen = std::distance(filePath.begin(), filePath.end());
-            if (basePathLen > pathLen) {
-                return SQFalse;
-            }
+        // canonicalize filePath to resolve . and .. in the path
+        filePath = std::filesystem::canonical(filePath);
+        std::cout << "canonical path: " << filePath.string() << std::endl;
+        
+        // if base path len is greater than the path len then the file is outside of base path
+        auto basePathLen = std::distance(basePath.begin(), basePath.end());
+        auto pathLen = std::distance(filePath.begin(), filePath.end());
+        if (basePathLen > pathLen) {
+            return SQFalse;
+        }
 
-            // test if filePath starts with basePath    
-            if (!std::equal(basePath.begin(), basePath.end(), filePath.begin())) {
-                // filePath not starting with basePath
-                std::cout << "not starting with" << std::endl;        
-            }
+        // test if filePath starts with basePath    
+        if (!std::equal(basePath.begin(), basePath.end(), filePath.begin())) {
+            // filePath not starting with basePath
+            std::cout << "not starting with" << std::endl;        
         }
     }
 
