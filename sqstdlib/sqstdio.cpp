@@ -67,6 +67,12 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 
         std::cout << "absolute path: " << fileDir.string() << std::endl;
 
+        // abort if fileDir is not a directory
+        if (!std::filesystem::is_directory(fileDir)) {
+            std::cout << "not a dir" << std::endl;
+            return 0;
+        }
+        
         // canonicalize fileDir to resolve . and .. in the path
         fileDir = std::filesystem::canonical(fileDir);
         std::cout << "canonical path: " << fileDir.string() << std::endl;
