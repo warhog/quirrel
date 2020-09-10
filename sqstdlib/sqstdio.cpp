@@ -1,15 +1,47 @@
 /* see copyright notice in squirrel.h */
 #include <new>
+#include <iostream>
+#include <filesystem>
 #include <stdio.h>
 #include <squirrel.h>
 #include <sqstdio.h>
 #include "sqstdstream.h"
+
+bool sqstd_io_is_valid_path(const SQChar *filename) {
+    std::string sfilename(filename);
+    std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
+    std::cout << "basepath: " << basePath.string() << std::endl;
+
+    std::filesystem::path p = std::filesystem::canonical("./string suchen und ersetzen");
+
+    if (p.has_filename()) {    
+        p.remove_filename();
+    }
+    std::cout << "path of file: " << p.string() << std::endl;
+
+    auto basePathLen = std::distance(basePath.begin(), basePath.end());
+    auto pathLen = std::distance(p.begin(), p.end());
+    
+    std::cout << "basePathLen: " << basePathLen << std::endl;
+    std::cout << "pathLen: " << pathLen << std::endl;
+    
+    if (basePathLen > pathLen) {
+        // if the base path len is bigger than the path len we already now that a file outside was requested
+        std::cout << "invalid path" << std::endl;
+        return 1;
+    }
+    
+    bool eq = std::equal(basePath.begin(), basePath.end(), p.begin());
+    std::cout << "eq: " << eq << std::endl;
+    return eq;
+}
 
 #define SQSTD_FILE_TYPE_TAG ((SQUnsignedInteger)(SQSTD_STREAM_TYPE_TAG | 0x00000001))
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
     printf("fiel to open: %s\n", filename);
+    sqstd_io_is_valid_path(filename);
 #ifndef SQUNICODE
     return (SQFILE)fopen(filename,mode);
 #else
