@@ -9,34 +9,50 @@
 
 SQChar *sqstd_io_file_operation_base_path = NULL;
 
-SQBool sqstd_io_set_base_path(SQChar *filename) {
-    sqstd_io_file_operation_base_path = filename;
+SQBool sqstd_io_set_base_path(SQChar *basePath) {
+    if (basePath == NULL) {
+        sqstd_io_file_operation_base_path = NULL;
+        return SQTrue;
+    }
+    
+    std::string sBasePath(basePath);
+    if (sBasePath.empty()) {
+        return SQFalse;
+    }
+    
+    if (!std::filesystem::exists(sBasePath)) {
+        // if given path is not existing we can already stop here
+        return SQFalse;
+    }
+    
+    sqstd_io_file_operation_base_path = basePath;
     return SQTrue;
 }
 
 SQBool sqstd_io_is_valid_path(const SQChar *filename) {
+    // if no basepath is set yet (see sqstd_io_set_base_path()) always return true
     if (sqstd_io_file_operation_base_path == NULL) {
-        return SQFalse;
+        return SQTrue;
     }
+    
     std::string sfilename(filename);
+    // test if filename was empty
     if (sfilename.empty()) {
         return SQFalse;
     }
     
-    std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
-    std::cout << "basepath: " << basePath.string() << std::endl;
-
+    // if given file is not existing we can already stop here
     if (!std::filesystem::exists(sfilename)) {
-        // if given file is not existing we can already stop here
         return SQFalse;
     }
-    std::filesystem::path filePath = std::filesystem::canonical(sfilename);
 
+    std::filesystem::path filePath = std::filesystem::canonical(sfilename);
     // remove the filename if it is existing
     if (filePath.has_filename()) {    
         filePath.remove_filename();
     }
 
+    std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
     // if base path len is greater than the path len then the file is outside of base path
     auto basePathLen = std::distance(basePath.begin(), basePath.end());
     auto pathLen = std::distance(filePath.begin(), filePath.end());
