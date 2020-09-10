@@ -2,6 +2,7 @@
 #include <new>
 #include <iostream>
 #include <filesystem>
+#include <string>
 #include <stdio.h>
 #include <squirrel.h>
 #include <sqstdio.h>
