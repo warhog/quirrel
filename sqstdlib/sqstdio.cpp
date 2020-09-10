@@ -89,9 +89,9 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         fileDir.append(filePath.filename().string());
         std::cout << "  loading: " << fileDir.string() << std::endl;
 #ifndef SQUNICODE
-        return (SQFILE)fopen(filename,mode);
+        return (SQFILE)fopen(fileDir.c_str(),mode);
 #else
-        return (SQFILE)_wfopen(filename,mode);
+        return (SQFILE)_wfopen(fileDir.c_str(),mode);
 #endif
         
     }
