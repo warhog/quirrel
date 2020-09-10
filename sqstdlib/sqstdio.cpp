@@ -7,19 +7,24 @@
 #include <sqstdio.h>
 #include "sqstdstream.h"
 
-SQChar *sqstd_io_file_operation_base_path;
+SQChar *sqstd_io_file_operation_base_path = NULL;
 
 SQBool sqstd_io_set_base_path(SQChar *filename) {
     sqstd_io_file_operation_base_path = filename;
+    return SQTrue;
 }
 
 SQBool sqstd_io_is_valid_path(const SQChar *filename) {
-    std::string sfilename(filename);
-    if (sfilename.empty()) {
-        return false;
+    if (sqstd_io_file_operation_base_path == NULL) {
+        return SQFalse;
     }
     
-    std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
+    std::string sfilename(filename);
+    if (sfilename.empty()) {
+        return SQFalse;
+    }
+    
+    std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
     std::cout << "basepath: " << basePath.string() << std::endl;
 
     if (!std::filesystem::exists(sfilename)) {
