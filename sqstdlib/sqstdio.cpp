@@ -66,7 +66,7 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         // abort if fileDir is not a directory
         if (!std::filesystem::is_directory(fileDir)) {
             std::cout << "  not a dir" << std::endl;
-            //return 0;
+            return 0;
         }
         
         // canonicalize fileDir to resolve . and .. in the path
