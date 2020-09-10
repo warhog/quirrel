@@ -6,8 +6,13 @@
 #include <squirrel.h>
 #include <sqstdio.h>
 #include "sqstdstream.h"
+#include <cstring>
 
 SQChar *sqstd_io_file_operation_base_path = NULL;
+
+SQBool sqstd_io_base_path_set() {
+    return sqstd_io_file_operation_base_path != NULL;
+}
 
 SQBool sqstd_io_set_base_path(SQChar *basePath) {
     if (basePath == NULL) {
@@ -25,58 +30,68 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
         return SQFalse;
     }
     
+    if (!std::filesystem::is_directory(sBasePath)) {
+        // no directory given
+        return SQFalse;
+    }
+    
     sqstd_io_file_operation_base_path = basePath;
     return SQTrue;
-}
-
-SQBool sqstd_io_is_valid_path(const SQChar *filename) {
-    // if no basepath is set yet (see sqstd_io_set_base_path()) always return true
-    if (sqstd_io_file_operation_base_path == NULL) {
-        return SQTrue;
-    }
-    
-    std::string sfilename(filename);
-    // test if filename was empty
-    if (sfilename.empty()) {
-        return SQFalse;
-    }
-    
-    // if given file is not existing we can already stop here
-    if (!std::filesystem::exists(sfilename)) {
-        return SQFalse;
-    }
-
-    std::filesystem::path filePath = std::filesystem::canonical(sfilename);
-    // remove the filename if it is existing
-    if (filePath.has_filename()) {    
-        filePath.remove_filename();
-    }
-
-    std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
-    // if base path len is greater than the path len then the file is outside of base path
-    auto basePathLen = std::distance(basePath.begin(), basePath.end());
-    auto pathLen = std::distance(filePath.begin(), filePath.end());
-    if (basePathLen > pathLen) {
-        return SQFalse;
-    }
-
-    // test if filePath starts with basePath    
-    return std::equal(basePath.begin(), basePath.end(), filePath.begin());
 }
 
 #define SQSTD_FILE_TYPE_TAG ((SQUnsignedInteger)(SQSTD_STREAM_TYPE_TAG | 0x00000001))
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
-    if (!sqstd_io_is_valid_path(filename))
-    {
-        printf("invalid file (outside base path): %s", filename);
-        return (SQFILE)-1;
-    }    
+
+    size_t len = strlen(filename);
+    SQChar newFilename[len + 1] = {0};
+    strcpy(newFilename, filename);
+    
+    if (sqstd_io_base_path_set()) {
+        std::string stringFilename(filename);
+        
+        std::filesystem::path filePath(stringFilename);
+        // remove the filename from filePath if it is existing
+        if (filePath.has_filename()) {    
+            filePath.remove_filename();
+        }
+        
+        std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
+        
+        // test if given file is absolute or relative
+        if (filePath.is_relative()) {
+            // is a relative path -> prepend the base path
+            std::cout << "relative path" << std::endl;        
+            basePath += std::filesystem::canonical(std::filesystem::path(stringFilename));
+            
+        } else {
+            // is an absolute path -> test if starts with base path
+            std::cout << "absolute path" << std::endl;        
+
+            // make filePath canonical to resolve . and .. in the path
+            filePath = std::filesystem::canonical(filePath);
+
+            // if base path len is greater than the path len then the file is outside of base path
+            auto basePathLen = std::distance(basePath.begin(), basePath.end());
+            auto pathLen = std::distance(filePath.begin(), filePath.end());
+            if (basePathLen > pathLen) {
+                return SQFalse;
+            }
+
+            // test if filePath starts with basePath    
+            if (!std::equal(basePath.begin(), basePath.end(), filePath.begin())) {
+                // filePath not starting with basePath
+                std::cout << "not starting with" << std::endl;        
+            }
+        }
+    }
+
+
 #ifndef SQUNICODE
-    return (SQFILE)fopen(filename,mode);
+    return (SQFILE)fopen(newFilename,mode);
 #else
-    return (SQFILE)_wfopen(filename,mode);
+    return (SQFILE)_wfopen(newFilename,mode);
 #endif
 }
 
