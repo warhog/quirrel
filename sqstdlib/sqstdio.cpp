@@ -2,14 +2,13 @@
 #include <new>
 #include <iostream>
 #include <filesystem>
-#include <string>
 #include <stdio.h>
 #include <squirrel.h>
 #include <sqstdio.h>
 #include "sqstdstream.h"
 
 SQBool sqstd_io_set_base_path(const SQChar *filename) {
-    sqstd_io_file_operation_base_path = std::string(filename);
+    sqstd_io_file_operation_base_path = filename;
 }
 
 SQBool sqstd_io_is_valid_path(const SQChar *filename) {
