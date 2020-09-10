@@ -54,10 +54,8 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         // test if given file (and path) is relative
         if (filePath.is_relative()) {
             // is a relative path -> prepend the base path
-            std::cout << "relative path" << std::endl;
             filePath = basePath / std::filesystem::path(stringFilename);
         }
-        std::cout << filePath.string() << std::endl;
 
         std::filesystem::path fileDir(filePath);
         // remove the filename from fileDir if it is existing
