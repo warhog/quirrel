@@ -70,6 +70,7 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
     if (!sqstd_io_is_valid_path(filename))
     {
+        printf("invalid file (outside base path): %s", filename);
         return (SQFILE)-1;
     }    
 #ifndef SQUNICODE
