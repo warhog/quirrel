@@ -7,7 +7,7 @@
 #include <sqstdio.h>
 #include "sqstdstream.h"
 
-bool sqstd_io_is_valid_path(const SQChar *filename) {
+SQBool sqstd_io_is_valid_path(const SQChar *filename) {
     std::string sfilename(filename);
     std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
     std::cout << "basepath: " << basePath.string() << std::endl;
