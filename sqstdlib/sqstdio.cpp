@@ -77,13 +77,15 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         auto basePathLen = std::distance(basePath.begin(), basePath.end());
         auto pathLen = std::distance(filePath.begin(), filePath.end());
         if (basePathLen > pathLen) {
-            return SQFalse;
+            std::cout << "length differs" << std::endl;        
+            return 0;
         }
 
         // test if filePath starts with basePath    
         if (!std::equal(basePath.begin(), basePath.end(), filePath.begin())) {
             // filePath not starting with basePath
             std::cout << "not starting with" << std::endl;        
+            return 0;
         }
     }
 
