@@ -14,7 +14,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
 
     if (!std::filesystem::exists(sfilename)) {
         // if given file is not existing we can already stop here
-        return false;
+        return SQFalse;
     }
     std::filesystem::path filePath = std::filesystem::canonical(sfilename);
 
@@ -27,7 +27,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     auto basePathLen = std::distance(basePath.begin(), basePath.end());
     auto pathLen = std::distance(filePath.begin(), filePath.end());
     if (basePathLen > pathLen) {
-        return false;
+        return SQFalse;
     }
 
     // test if filePath starts with basePath    
