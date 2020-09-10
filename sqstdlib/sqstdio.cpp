@@ -15,7 +15,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     std::cout << "checking: " << sfilename << std::endl;
     std::filesystem::path tp(sfilename);
     std::cout << "tp: " << tp.string() << std::endl;
-    if (std::filesystem::exists(tp)) {
+    if (!std::filesystem::exists(tp)) {
         std::cout << "not existing: " << sfilename << std::endl;
         return false;
     }
