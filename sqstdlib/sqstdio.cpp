@@ -12,6 +12,10 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     std::filesystem::path basePath = std::filesystem::canonical("/home/tobi/code/cpp");
     std::cout << "basepath: " << basePath.string() << std::endl;
 
+    if (std::filesystem::exists(filename)) {
+        std::cout << "not existing: " << filename << std::endl;
+        return false;
+    }
     std::filesystem::path p = std::filesystem::canonical(sfilename);
 
     if (p.has_filename()) {    
@@ -28,7 +32,7 @@ bool sqstd_io_is_valid_path(const SQChar *filename) {
     if (basePathLen > pathLen) {
         // if the base path len is bigger than the path len we already now that a file outside was requested
         std::cout << "invalid path" << std::endl;
-        return 1;
+        return false;
     }
     
     bool eq = std::equal(basePath.begin(), basePath.end(), p.begin());
