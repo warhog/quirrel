@@ -43,6 +43,7 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
+    // if base path was given box paths
     if (sqstd_io_base_path_set()) {
         std::string stringFilename(filename);
         
@@ -69,7 +70,7 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
             return 0;
         }
         
-        // canonicalize fileDir to resolve . and .. in the path
+        // canonicalize fileDir to resolve relative parts of the path
         fileDir = std::filesystem::canonical(fileDir);
         
         // if base path len is greater than the path len then the file is outside of base path
@@ -95,7 +96,6 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 #endif
         
     }
-
 
 #ifndef SQUNICODE
     return (SQFILE)fopen(filename,mode);
