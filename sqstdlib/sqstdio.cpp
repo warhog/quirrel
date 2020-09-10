@@ -43,7 +43,7 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
-    if (sqstd_io_base_path_set()) {
+/*    if (sqstd_io_base_path_set()) {
         std::string stringFilename(filename);
         
         std::filesystem::path filePath(stringFilename);
@@ -77,14 +77,14 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         auto pathLen = std::distance(fileDir.begin(), fileDir.end());
         if (basePathLen > pathLen) {
             std::cout << "  length differs" << std::endl;        
-//            return 0;
+            return 0;
         }
 
         // test if fileDir starts with basePath    
         if (!std::equal(basePath.begin(), basePath.end(), fileDir.begin())) {
             // fileDir not starting with basePath
             std::cout << "  not starting with" << std::endl;        
-//            return 0;
+            return 0;
         }
         fileDir.append(filePath.filename().string());
         std::cout << "  loading: " << fileDir.string() << std::endl;
@@ -94,7 +94,7 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         return (SQFILE)_wfopen(fileDir.c_str(),mode);
 #endif
         
-    }
+    }*/
 
 
 #ifndef SQUNICODE
