@@ -66,7 +66,7 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         // abort if fileDir is not a directory
         if (!std::filesystem::is_directory(fileDir)) {
             std::cout << "  not a dir" << std::endl;
-            return 0;
+            //return 0;
         }
         
         // canonicalize fileDir to resolve . and .. in the path
@@ -77,14 +77,14 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         auto pathLen = std::distance(fileDir.begin(), fileDir.end());
         if (basePathLen > pathLen) {
             std::cout << "  length differs" << std::endl;        
-            return 0;
+//            return 0;
         }
 
         // test if fileDir starts with basePath    
         if (!std::equal(basePath.begin(), basePath.end(), fileDir.begin())) {
             // fileDir not starting with basePath
             std::cout << "  not starting with" << std::endl;        
-            return 0;
+//            return 0;
         }
         fileDir.append(filePath.filename().string());
         std::cout << "  loading: " << fileDir.string() << std::endl;
