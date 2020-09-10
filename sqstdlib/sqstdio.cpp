@@ -7,7 +7,7 @@
 #include <sqstdio.h>
 #include "sqstdstream.h"
 
-SQBool sqstd_io_set_base_path(const SQChar *filename) {
+SQBool sqstd_io_set_base_path(SQChar *filename) {
     sqstd_io_file_operation_base_path = filename;
 }
 
