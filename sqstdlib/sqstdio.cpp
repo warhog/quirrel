@@ -43,7 +43,7 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
 //basic API
 SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
-/*    if (sqstd_io_base_path_set()) {
+    if (sqstd_io_base_path_set()) {
         std::string stringFilename(filename);
         
         std::filesystem::path filePath(stringFilename);
@@ -89,12 +89,12 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         fileDir.append(filePath.filename().string());
         std::cout << "  loading: " << fileDir.string() << std::endl;
 #ifndef SQUNICODE
-        return (SQFILE)fopen(fileDir.c_str(),mode);
+        return (SQFILE)fopen(ffilename,mode);
 #else
-        return (SQFILE)_wfopen(fileDir.c_str(),mode);
+        return (SQFILE)_wfopen(filename,mode);
 #endif
         
-    }*/
+    }
 
 
 #ifndef SQUNICODE
