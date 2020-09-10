@@ -10,10 +10,13 @@
 
 SQChar *sqstd_io_file_operation_base_path = NULL;
 
+// test if base path existing
 SQBool sqstd_io_base_path_set() {
     return sqstd_io_file_operation_base_path != NULL;
 }
 
+// set a base path
+// basePath can be NULL to remove base path
 SQBool sqstd_io_set_base_path(SQChar *basePath) {
     if (basePath == NULL) {
         sqstd_io_file_operation_base_path = NULL;
@@ -21,15 +24,18 @@ SQBool sqstd_io_set_base_path(SQChar *basePath) {
     }
     
     std::string sBasePath(basePath);
+    // test if empty directory was given
     if (sBasePath.empty()) {
         return SQFalse;
     }
     
+    // test if given basePath is not existing
     if (!std::filesystem::exists(sBasePath)) {
         // if given path is not existing we can already stop here
         return SQFalse;
     }
     
+    // test if given basePath is a directory
     if (!std::filesystem::is_directory(sBasePath)) {
         // no directory given
         return SQFalse;
@@ -45,12 +51,18 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 {
     // if base path was given box paths
     if (sqstd_io_base_path_set()) {
+        // a base path was set, the following happens:
+        // - test if relative path given -> prepent the base path to make absolute
+        // - get the plain directory path
+        // - test if is directory
+        // - make the directory canonical to remove all relative parts (. or .. in between)
+        // - test if number of directories of base path is smaller equal to the directory path
+        // - test if path starts with base path
+        // if one of the 3 last tests fails the function will return 0 indicating an error (returns file handle, 0 is an invalid file handle)
         std::string stringFilename(filename);
         
         std::filesystem::path filePath(stringFilename);
         std::filesystem::path basePath = std::filesystem::canonical(std::string(sqstd_io_file_operation_base_path));
-        
-        std::cout << "filePath entry: " << filePath.string() << std::endl;
         
         // test if given file (and path) is relative
         if (filePath.is_relative()) {
@@ -66,7 +78,6 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 
         // abort if fileDir is not a directory
         if (!std::filesystem::is_directory(fileDir)) {
-            std::cout << "  not a dir" << std::endl;
             return 0;
         }
         
@@ -77,18 +88,15 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
         auto basePathLen = std::distance(basePath.begin(), basePath.end());
         auto pathLen = std::distance(fileDir.begin(), fileDir.end());
         if (basePathLen > pathLen) {
-            std::cout << "  length differs" << std::endl;        
             return 0;
         }
 
         // test if fileDir starts with basePath    
         if (!std::equal(basePath.begin(), basePath.end(), fileDir.begin())) {
             // fileDir not starting with basePath
-            std::cout << "  not starting with" << std::endl;        
             return 0;
         }
         fileDir.append(filePath.filename().string());
-        std::cout << "  loading: " << fileDir.string() << std::endl;
 #ifndef SQUNICODE
         return (SQFILE)fopen(fileDir.string().c_str(),mode);
 #else
@@ -96,7 +104,8 @@ SQFILE sqstd_fopen(const SQChar *filename ,const SQChar *mode)
 #endif
         
     }
-
+    
+    // fallback behaviour to old mode if no base path was given
 #ifndef SQUNICODE
     return (SQFILE)fopen(filename,mode);
 #else
